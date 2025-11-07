@@ -23,7 +23,7 @@ Este script:
 ```bash
 cd backend
 source venv/bin/activate
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+uvicorn app.main:app --host 0.0.0.0 --port 8601
 ```
 
 #### 2. Iniciar el Portal (en otra terminal)
@@ -31,7 +31,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```bash
 cd portal
 source venv/bin/activate
-streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
+streamlit run app/portal.py --server.port=8600 --server.baseUrlPath=/portal
 ```
 
 ## 🔑 Credenciales de Administrador
@@ -256,13 +256,13 @@ lsof -i :8600  # Portal
 cd backend
 pkill -f uvicorn
 source venv/bin/activate
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8601 --reload
 
 # Reiniciar portal
 cd portal
 pkill -f streamlit
 source venv/bin/activate
-streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
+streamlit run app/portal.py --server.port=8600 --server.baseUrlPath=/portal
 ```
 
 ## 📞 Soporte

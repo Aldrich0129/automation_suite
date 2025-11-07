@@ -93,6 +93,43 @@ automation-suite/
 └── README.md
 ```
 
+## 🔌 Arquitectura de Puertos
+
+El sistema utiliza un esquema de puertos secuencial para facilitar la escalabilidad:
+
+| Servicio | Puerto | URL | Descripción |
+|----------|--------|-----|-------------|
+| **Portal** | `8600` | http://localhost:8600/portal | Portal web principal y panel de administración |
+| **Backend** | `8601` | http://localhost:8601 | API REST y documentación (Swagger: /docs) |
+| **Aplicación 1** | `8602` | http://localhost:8602/* | Generador de Cartas de Manifestación |
+| **Aplicación 2** | `8603` | http://localhost:8603/* | (Reservado para futuras apps) |
+| **Aplicación N** | `860N` | http://localhost:860N/* | Esquema escalable para nuevas aplicaciones |
+
+### Ventajas de esta arquitectura:
+
+- **Escalabilidad:** Cada nueva aplicación obtiene el siguiente puerto disponible (8603, 8604, etc.)
+- **Claridad:** Los servicios principales (portal y backend) tienen puertos fijos y conocidos
+- **Aislamiento:** Cada aplicación puede ejecutarse independientemente en su propio puerto
+- **Sin conflictos:** El esquema numérico evita colisiones de puertos
+
+### Configuración en `.env`:
+
+```bash
+# Portal
+CORS_ALLOW_ORIGIN=http://localhost:8600
+
+# Backend
+BACKEND_PORT=8601
+BACKEND_BASE_URL=http://localhost:8601
+```
+
+### Al crear una nueva aplicación:
+
+1. Asigna el siguiente puerto disponible (ej: 8603)
+2. Configura el puerto en el script `run_local.sh` de la app
+3. Actualiza el archivo `.streamlit/config.toml` si usa Streamlit
+4. Documenta el puerto en el README de la aplicación
+
 ## 🚀 Instalación y Ejecución
 
 ### Requisitos Previos
@@ -180,7 +217,7 @@ alembic upgrade head
 # Iniciar servidor
 ./run_local.sh
 # o manualmente:
-# uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+# uvicorn app.main:app --host 0.0.0.0 --port 8601 --reload
 ```
 
 El backend estará disponible en:
@@ -203,7 +240,7 @@ pip install -r requirements.txt
 # Iniciar portal
 ./run_local.sh
 # o manualmente:
-# streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
+# streamlit run app/portal.py --server.port=8600 --server.baseUrlPath=/portal
 ```
 
 El portal estará disponible en:
@@ -264,7 +301,7 @@ cd backend
 
 # 2. En otra terminal, inicia el portal
 cd portal
-./run_local.sh  # O: streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
+./run_local.sh  # O: streamlit run app/portal.py --server.port=8600 --server.baseUrlPath=/portal
 
 # 3. Accede al portal
 # Navega a: http://localhost:8600/portal
@@ -485,7 +522,7 @@ alembic downgrade -1
    ./run_local.sh
    # O manualmente:
    # source venv/bin/activate
-   # uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+   # uvicorn app.main:app --host 0.0.0.0 --port 8601 --reload
    ```
 
 4. **Revisa la variable `BACKEND_BASE_URL` en `.env`:**
@@ -564,7 +601,7 @@ alembic downgrade -1
 
 2. **Verifica que el script `run_local.sh` tenga el parámetro:**
    ```bash
-   streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
+   streamlit run app/portal.py --server.port=8600 --server.baseUrlPath=/portal
    ```
 
 3. **Si usas un proxy/nginx, configura el `baseUrlPath` correctamente**
