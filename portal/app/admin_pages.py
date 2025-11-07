@@ -193,7 +193,7 @@ def show_apps_management():
                 st.markdown(f"**Descripción:** {app.get('description', 'Sin descripción')}")
 
                 # Acciones
-                col_toggle, col_pass, col_del = st.columns(3)
+                col_toggle, col_pass, col_sched, col_del = st.columns(4)
 
                 with col_toggle:
                     new_status = not app['enabled']
@@ -210,6 +210,11 @@ def show_apps_management():
                 with col_pass:
                     if st.button("🔑 Contraseña", key=f"pass_{app['id']}", use_container_width=True):
                         st.session_state[f"show_password_{app['id']}"] = True
+                        st.rerun()
+
+                with col_sched:
+                    if st.button("📅 Horario", key=f"sched_{app['id']}", use_container_width=True):
+                        st.session_state[f"show_schedule_{app['id']}"] = True
                         st.rerun()
 
                 with col_del:
@@ -247,6 +252,73 @@ def show_apps_management():
                                 client.remove_app_password(app['id'])
                                 st.success("Contraseña eliminada")
                                 st.session_state[f"show_password_{app['id']}"] = False
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Error: {str(e)}")
+
+                # Formulario de programación
+                if st.session_state.get(f"show_schedule_{app['id']}", False):
+                    with st.form(f"schedule_form_{app['id']}"):
+                        st.markdown("**Programar Disponibilidad**")
+
+                        # Obtener schedule actual
+                        try:
+                            current_schedule = client.get_app_schedule(app['id'])
+                        except Exception:
+                            current_schedule = None
+
+                        col1, col2 = st.columns(2)
+
+                        with col1:
+                            enabled_from = st.date_input(
+                                "Disponible desde",
+                                value=current_schedule.get('enabled_from') if current_schedule and current_schedule.get('enabled_from') else None
+                            )
+
+                        with col2:
+                            enabled_until = st.date_input(
+                                "Disponible hasta",
+                                value=current_schedule.get('enabled_until') if current_schedule and current_schedule.get('enabled_until') else None
+                            )
+
+                        col_save, col_remove, col_cancel = st.columns(3)
+
+                        with col_save:
+                            save_sched = st.form_submit_button("💾 Guardar")
+
+                        with col_remove:
+                            remove_sched = st.form_submit_button("🗑️ Eliminar")
+
+                        with col_cancel:
+                            cancel_sched = st.form_submit_button("❌ Cancelar")
+
+                        if cancel_sched:
+                            st.session_state[f"show_schedule_{app['id']}"] = False
+                            st.rerun()
+
+                        if save_sched:
+                            try:
+                                schedule_data = {}
+                                if enabled_from:
+                                    schedule_data['enabled_from'] = enabled_from.isoformat()
+                                if enabled_until:
+                                    schedule_data['enabled_until'] = enabled_until.isoformat()
+
+                                if schedule_data:
+                                    client.set_app_schedule(app['id'], schedule_data)
+                                    st.success("Programación actualizada")
+                                    st.session_state[f"show_schedule_{app['id']}"] = False
+                                    st.rerun()
+                                else:
+                                    st.warning("Selecciona al menos una fecha")
+                            except Exception as e:
+                                st.error(f"Error: {str(e)}")
+
+                        if remove_sched:
+                            try:
+                                client.delete_app_schedule(app['id'])
+                                st.success("Programación eliminada")
+                                st.session_state[f"show_schedule_{app['id']}"] = False
                                 st.rerun()
                             except Exception as e:
                                 st.error(f"Error: {str(e)}")

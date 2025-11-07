@@ -173,17 +173,65 @@ Al iniciar por primera vez, se crea un usuario administrador:
 
 ### Panel de Administración
 
-1. Ve a la pestaña "⚙️ Administración"
-2. Inicia sesión con las credenciales de admin
-3. Gestiona aplicaciones:
-   - Crear, editar y eliminar apps
-   - Activar/desactivar apps
-   - Configurar contraseñas
-   - Establecer ventanas temporales
-4. Consulta métricas:
-   - Eventos totales por aplicación
-   - Series temporales
-   - Detalle por tipo de evento
+El panel de administración está completamente integrado en el portal. Para acceder:
+
+1. **Accede al Portal:** Abre http://localhost:8501/portal en tu navegador
+2. **Ve a la pestaña "⚙️ Administración"** en la parte superior del portal
+3. **Inicia sesión** con las credenciales de administrador:
+   - Usuario: `admin`
+   - Contraseña: `admin123`
+4. **Gestiona aplicaciones** desde la pestaña "📦 Aplicaciones":
+   - **Crear apps:** Click en "➕ Nueva Aplicación" y completa el formulario
+   - **Editar apps:** Expande cualquier aplicación para ver opciones
+   - **Activar/Desactivar:** Toggle rápido para habilitar/deshabilitar aplicaciones
+   - **Configurar contraseñas:** Botón "🔑 Contraseña" para apps con `access_mode=password`
+   - **Programar disponibilidad:** Botón "📅 Horario" para establecer ventanas temporales (`enabled_from` / `enabled_until`)
+   - **Eliminar apps:** Botón "🗑️ Eliminar" con confirmación
+5. **Consulta métricas** desde la pestaña "📊 Métricas":
+   - **Resumen global:** Totales de eventos por aplicación (últimos 7-90 días)
+   - **Gráficos de barras:** Comparación visual entre aplicaciones
+   - **Series temporales:** Evolución diaria de eventos por tipo (open, generate_document, error, custom)
+   - **Filtros:** Selecciona aplicación, tipo de evento y período
+
+#### Flujo completo de administración
+
+```bash
+# 1. Asegúrate de que el backend esté ejecutándose
+cd backend
+./run_local.sh  # O: uvicorn app.main:app --reload
+
+# 2. En otra terminal, inicia el portal
+cd portal
+./run_local.sh  # O: streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
+
+# 3. Accede al portal
+# Navega a: http://localhost:8501/portal
+
+# 4. Ve a la pestaña "⚙️ Administración" y haz login
+
+# 5. Crea una aplicación de prueba
+# - ID: app_test
+# - Nombre: Aplicación de Prueba
+# - Path: /apps/test
+# - Modo de acceso: public
+# - Habilitada: Sí
+
+# 6. La aplicación aparecerá automáticamente en el catálogo principal
+
+# 7. (Opcional) Cambia el modo de acceso a "password" y establece una contraseña
+# Al hacer click en "Abrir" desde el catálogo, pedirá la contraseña
+
+# 8. (Opcional) Envía telemetría de prueba
+curl -X POST http://localhost:8000/api/telemetry \
+  -H "Content-Type: application/json" \
+  -d '{
+    "app_id": "app_test",
+    "event_type": "open",
+    "user_id": "test_user"
+  }'
+
+# 9. Consulta las métricas en la pestaña "📊 Métricas"
+```
 
 ### Modos de Acceso
 
@@ -251,6 +299,127 @@ alembic upgrade head
 # Revertir última migración
 alembic downgrade -1
 ```
+
+## 🔧 Troubleshooting
+
+### El portal no muestra aplicaciones
+
+**Síntoma:** Al abrir el portal, aparece el mensaje "No se encontraron aplicaciones registradas"
+
+**Soluciones:**
+
+1. **Verifica que el backend esté ejecutándose:**
+   ```bash
+   curl http://localhost:8000/api/healthz
+   # Debe responder: {"status": "healthy"}
+   ```
+
+2. **Revisa la configuración del backend en `.env`:**
+   ```bash
+   BACKEND_BASE_URL=http://localhost:8000
+   ```
+
+3. **Crea aplicaciones desde el panel de administración:**
+   - Ve a "⚙️ Administración" → "📦 Aplicaciones" → "➕ Nueva Aplicación"
+
+4. **Verifica que existan apps en el backend:**
+   ```bash
+   # Debes tener sesión admin, o usa curl con cookies
+   curl http://localhost:8000/api/apps
+   ```
+
+### Error "No se pudo conectar al backend"
+
+**Síntoma:** Aparece un error al cargar el catálogo o al hacer login
+
+**Soluciones:**
+
+1. **Verifica que el backend esté corriendo en el puerto 8000:**
+   ```bash
+   lsof -i :8000
+   # O en Windows: netstat -ano | findstr :8000
+   ```
+
+2. **Revisa la variable `BACKEND_BASE_URL` en `.env`:**
+   - Debe apuntar a `http://localhost:8000`
+   - Si cambias el puerto del backend, actualiza esta variable
+
+3. **Verifica CORS en el backend:**
+   - En `.env`, asegúrate de que `CORS_ALLOW_ORIGIN=http://localhost:8501`
+   - Si cambias el puerto del portal, actualiza esta variable
+
+### Error 401/403 en el panel de administración
+
+**Síntoma:** No puedes hacer login o las operaciones de admin fallan con "No autenticado"
+
+**Soluciones:**
+
+1. **Verifica las credenciales:**
+   - Usuario: `admin`
+   - Contraseña: `admin123`
+   - Puedes cambiarlas en `.env` con `ADMIN_DEFAULT_USER` y `ADMIN_DEFAULT_PASS`
+
+2. **Revisa las cookies del navegador:**
+   - El backend usa cookies HttpOnly (`admin_session`)
+   - Si usas incógnito o borras cookies, debes volver a hacer login
+
+3. **Verifica que la sesión no haya expirado:**
+   - Las sesiones duran 8 horas por defecto (`SESSION_EXPIRE_HOURS=8`)
+
+### La aplicación con contraseña no valida correctamente
+
+**Síntoma:** Ingresas la contraseña en el catálogo pero sigue diciendo "Contraseña incorrecta"
+
+**Soluciones:**
+
+1. **Verifica que la contraseña esté configurada en el backend:**
+   - Ve a "⚙️ Administración" → Expande la app → "🔑 Contraseña"
+   - Ingresa la contraseña nuevamente
+
+2. **Revisa que el `access_mode` sea "password":**
+   - Si es "public", no pedirá contraseña
+   - Si es "sso", está deshabilitado por ahora
+
+### Las métricas no muestran datos
+
+**Síntoma:** En "📊 Métricas" aparece "No hay eventos registrados"
+
+**Soluciones:**
+
+1. **Envía eventos de telemetría de prueba:**
+   ```bash
+   curl -X POST http://localhost:8000/api/telemetry \
+     -H "Content-Type: application/json" \
+     -d '{
+       "app_id": "tu_app_id",
+       "event_type": "open",
+       "user_id": "test"
+     }'
+   ```
+
+2. **Verifica el período seleccionado:**
+   - Las métricas solo muestran eventos de los últimos N días (7, 15, 30, etc.)
+   - Si los eventos son antiguos, aumenta el período
+
+3. **Revisa que el `app_id` en telemetría coincida con el ID de la app:**
+   - Debe ser exactamente el mismo que el ID registrado
+
+### El portal no carga con `--server.baseUrlPath=/portal`
+
+**Síntoma:** Al ejecutar `streamlit run app/portal.py --server.baseUrlPath=/portal` el portal no carga o da error 404
+
+**Soluciones:**
+
+1. **Accede a la URL correcta:**
+   - **Correcto:** http://localhost:8501/portal
+   - **Incorrecto:** http://localhost:8501 (sin /portal)
+
+2. **Verifica que el script `run_local.sh` tenga el parámetro:**
+   ```bash
+   streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
+   ```
+
+3. **Si usas un proxy/nginx, configura el `baseUrlPath` correctamente**
 
 ## 🔧 Configuración Avanzada
 

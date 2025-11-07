@@ -21,11 +21,17 @@ import os
 import sys
 from pathlib import Path
 from typing import Dict, List
+from datetime import datetime
+import time
 
 import streamlit as st
-import yaml
 
-# Importar panel admin
+# Importar cliente HTTP y panel admin
+try:
+    from client import BackendClient
+except ImportError:
+    BackendClient = None
+
 try:
     from admin_pages import show_admin_panel
 except ImportError:
@@ -62,28 +68,33 @@ st.set_page_config(
 # Funciones Auxiliares
 # ===========================
 
-def load_apps_registry(registry_path: str) -> List[Dict]:
+@st.cache_data(ttl=15)
+def load_apps_from_backend() -> List[Dict]:
     """
-    Carga el inventario de aplicaciones desde el archivo YAML.
-
-    Args:
-        registry_path (str): Ruta al archivo apps_registry.yaml
+    Carga el catálogo de aplicaciones desde el backend.
 
     Returns:
-        List[Dict]: Lista de aplicaciones con sus metadatos
+        List[Dict]: Lista de aplicaciones desde GET /api/apps
     """
+    if BackendClient is None:
+        st.error("❌ No se pudo importar el cliente HTTP")
+        return []
+
     try:
-        with open(registry_path, 'r', encoding='utf-8') as file:
-            data = yaml.safe_load(file)
-            return data.get('apps', [])
-    except FileNotFoundError:
-        st.error(f"❌ No se encontró el archivo de registro: {registry_path}")
-        return []
-    except yaml.YAMLError as e:
-        st.error(f"❌ Error al leer el archivo YAML: {e}")
-        return []
+        client = BackendClient()
+        apps = client.list_apps()
+
+        # Convertir tags de string separado por comas a lista
+        for app in apps:
+            if isinstance(app.get('tags'), str):
+                app['tags'] = [tag.strip() for tag in app['tags'].split(',') if tag.strip()]
+            elif not app.get('tags'):
+                app['tags'] = []
+
+        return apps
     except Exception as e:
-        st.error(f"❌ Error inesperado: {e}")
+        st.error(f"❌ Error al cargar aplicaciones desde el backend: {str(e)}")
+        st.info("💡 Verifica que el backend esté ejecutándose en la URL configurada")
         return []
 
 
@@ -131,6 +142,7 @@ def render_app_card(app: Dict, backend_url: str):
     app_path = app.get('path', '/')
     app_tags = app.get('tags', [])
     app_enabled = app.get('enabled', False)
+    access_mode = app.get('access_mode', 'public')
 
     # Obtener icono según las etiquetas
     icon = get_app_icon(app_tags)
@@ -190,18 +202,80 @@ def render_app_card(app: Dict, backend_url: str):
                 </div>
             """, unsafe_allow_html=True)
 
-            # Botón grande para abrir la aplicación
-            if st.button(
-                f"▶ Abrir {app_name}",
-                key=f"btn_{app_id}",
-                use_container_width=True,
-                type="primary"
-            ):
-                st.markdown(
-                    f'<meta http-equiv="refresh" content="0; url={full_url}">',
-                    unsafe_allow_html=True
-                )
-                st.success(f"Redirigiendo a {app_name}...")
+            # Botón según el modo de acceso
+            if access_mode == "public":
+                # Acceso público directo
+                if st.button(
+                    f"▶ Abrir {app_name}",
+                    key=f"btn_{app_id}",
+                    use_container_width=True,
+                    type="primary"
+                ):
+                    st.markdown(
+                        f'<meta http-equiv="refresh" content="0; url={full_url}">',
+                        unsafe_allow_html=True
+                    )
+                    st.success(f"Redirigiendo a {app_name}...")
+
+            elif access_mode == "password":
+                # Requiere contraseña
+                if st.button(
+                    f"🔒 Abrir {app_name}",
+                    key=f"btn_{app_id}",
+                    use_container_width=True,
+                    type="primary"
+                ):
+                    st.session_state[f"show_password_modal_{app_id}"] = True
+                    st.rerun()
+
+                # Modal de contraseña
+                if st.session_state.get(f"show_password_modal_{app_id}", False):
+                    with st.form(f"password_modal_{app_id}"):
+                        st.markdown("🔐 **Ingresa la contraseña para acceder**")
+                        password = st.text_input("Contraseña", type="password", key=f"pwd_{app_id}")
+
+                        col1, col2 = st.columns(2)
+
+                        with col1:
+                            submit = st.form_submit_button("✅ Acceder", use_container_width=True)
+
+                        with col2:
+                            cancel = st.form_submit_button("❌ Cancelar", use_container_width=True)
+
+                        if cancel:
+                            st.session_state[f"show_password_modal_{app_id}"] = False
+                            st.rerun()
+
+                        if submit:
+                            if password:
+                                try:
+                                    client = BackendClient()
+                                    access_granted = client.check_app_access(app_id, password)
+
+                                    if access_granted:
+                                        st.session_state[f"show_password_modal_{app_id}"] = False
+                                        st.markdown(
+                                            f'<meta http-equiv="refresh" content="0; url={full_url}">',
+                                            unsafe_allow_html=True
+                                        )
+                                        st.success(f"Acceso concedido. Redirigiendo a {app_name}...")
+                                    else:
+                                        st.error("❌ Contraseña incorrecta")
+                                except Exception as e:
+                                    st.error(f"❌ Error al verificar acceso: {str(e)}")
+                            else:
+                                st.warning("⚠️ Ingresa la contraseña")
+
+            elif access_mode == "sso":
+                # SSO (stub por ahora)
+                if st.button(
+                    f"🔐 SSO - {app_name}",
+                    key=f"btn_{app_id}",
+                    use_container_width=True,
+                    disabled=True
+                ):
+                    pass
+                st.info("ℹ️ SSO en desarrollo. Contacta al administrador.")
     else:
         # Aplicación desactivada - estilo más sutil
         st.markdown(f"""
@@ -397,16 +471,16 @@ def show_portal_content():
     # Cargar configuración
     backend_url = get_backend_base_url()
 
-    # Cargar el inventario de aplicaciones
-    registry_path = Path(__file__).parent.parent / "apps_registry.yaml"
-    apps = load_apps_registry(str(registry_path))
+    # Cargar el inventario de aplicaciones desde el backend
+    with st.spinner("Cargando catálogo de aplicaciones..."):
+        apps = load_apps_from_backend()
 
     # Mostrar aplicaciones
     if not apps:
         st.warning("⚠️ No se encontraron aplicaciones registradas.")
         st.info(
-            "💡 **Sugerencia:** Añade aplicaciones en el archivo "
-            "`portal/apps_registry.yaml` para que aparezcan aquí."
+            "💡 **Sugerencia:** Ve a la pestaña '⚙️ Administración' para crear aplicaciones, "
+            "o verifica que el backend esté ejecutándose correctamente."
         )
     else:
         # Separar aplicaciones activas e inactivas
