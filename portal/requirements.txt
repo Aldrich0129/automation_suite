@@ -1,0 +1,21 @@
+# Requirements para el Portal de Automation Suite
+# =================================================
+#
+# Este archivo contiene las dependencias mínimas necesarias
+# para ejecutar el portal principal de la suite de automatización.
+#
+# Instalación:
+#   pip install -r requirements.txt
+#
+# Uso:
+#   streamlit run portal/app/portal.py
+
+# Framework de UI
+streamlit>=1.28.0
+
+# Parser de archivos YAML
+PyYAML>=6.0.1
+
+# Utilidades adicionales (opcional, para futuras mejoras)
+# pandas>=2.0.0  # Para análisis de datos
+# plotly>=5.17.0  # Para gráficos interactivos
