@@ -102,15 +102,28 @@ automation-suite/
 
 ### 1. Configuración Inicial
 
+#### ⚠️ IMPORTANTE - Configuración de .env
+
+**El archivo `.env` contiene configuraciones sensibles y credenciales:**
+
+- **Archivo `.env`**: NO se commitea al repositorio (está en `.gitignore` por seguridad)
+- **Credenciales por defecto**: `admin/admin123` (cambiar en producción)
+- **Cada desarrollador** debe crear su propio `.env` desde `.env.example`
+- **En producción**: SIEMPRE cambiar las credenciales y el `SECRET_KEY`
+
 ```bash
 # Clonar el repositorio
 git clone <repository-url>
 cd automation-suite
 
-# Copiar archivo de configuración
+# ⚠️ PASO OBLIGATORIO: Copiar archivo de configuración
 cp .env.example .env
 
-# Editar .env con tus configuraciones
+# Revisar y personalizar configuraciones según tu entorno
+# En particular, en producción cambiar:
+# - ADMIN_DEFAULT_USER y ADMIN_DEFAULT_PASS
+# - SECRET_KEY (generar una clave aleatoria de 32+ caracteres)
+# - DATABASE_URL (si usas PostgreSQL)
 nano .env
 ```
 
@@ -166,12 +179,17 @@ El portal estará disponible en:
 
 ## 🔐 Credenciales por Defecto
 
-Al iniciar por primera vez, se crea un usuario administrador:
+Al iniciar por primera vez, se crea un usuario administrador con credenciales definidas en el archivo `.env`:
 
-- **Usuario:** `admin`
-- **Contraseña:** `admin123`
+- **Usuario:** `admin` (variable `ADMIN_DEFAULT_USER`)
+- **Contraseña:** `admin123` (variable `ADMIN_DEFAULT_PASS`)
 
-> ⚠️ **Importante:** Cambia estas credenciales en producción editando el archivo `.env`
+> ⚠️ **IMPORTANTE - Seguridad:**
+> - Estas credenciales están en el archivo `.env` que **NO debe commitearse** al repositorio
+> - El archivo `.env` está en `.gitignore` por seguridad
+> - Cada desarrollador debe crear su propio `.env` desde `.env.example`
+> - **En producción**: SIEMPRE cambiar estas credenciales editando el archivo `.env`
+> - Genera un `SECRET_KEY` aleatorio y fuerte (mínimo 32 caracteres)
 
 ## 📖 Uso
 
@@ -407,21 +425,41 @@ alembic downgrade -1
 
 ### Error "No se pudo conectar al backend"
 
-**Síntoma:** Aparece un error al cargar el catálogo o al hacer login
+**Síntoma:** Aparece el error "No se pudo conectar al backend (http://localhost:8000)" en el portal
 
 **Soluciones:**
 
-1. **Verifica que el backend esté corriendo en el puerto 8000:**
+1. **⚠️ Verifica que existe el archivo `.env`:**
    ```bash
+   # Si no existe, créalo desde .env.example
+   cp .env.example .env
+   ```
+
+2. **Verifica que el backend esté corriendo en el puerto 8000:**
+   ```bash
+   # Verificar si el backend está ejecutándose
+   curl http://localhost:8000/api/healthz
+   # Debe responder: {"status": "healthy"}
+
+   # O verifica el puerto
    lsof -i :8000
    # O en Windows: netstat -ano | findstr :8000
    ```
 
-2. **Revisa la variable `BACKEND_BASE_URL` en `.env`:**
+3. **Si el backend no está corriendo, inícialo:**
+   ```bash
+   cd backend
+   ./run_local.sh
+   # O manualmente:
+   # source venv/bin/activate
+   # uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+   ```
+
+4. **Revisa la variable `BACKEND_BASE_URL` en `.env`:**
    - Debe apuntar a `http://localhost:8000`
    - Si cambias el puerto del backend, actualiza esta variable
 
-3. **Verifica CORS en el backend:**
+5. **Verifica CORS en el backend:**
    - En `.env`, asegúrate de que `CORS_ALLOW_ORIGIN=http://localhost:8501`
    - Si cambias el puerto del portal, actualiza esta variable
 
