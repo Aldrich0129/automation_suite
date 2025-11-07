@@ -127,7 +127,40 @@ cp .env.example .env
 nano .env
 ```
 
-### 2. Iniciar el Backend
+### 2. Inicio Rápido con Script Automático (Recomendado) 🚀
+
+**La forma más rápida de iniciar todo el sistema:**
+
+```bash
+# Hacer ejecutable el script de inicio
+chmod +x start_system.sh
+
+# Iniciar el sistema completo
+./start_system.sh
+```
+
+Este script automáticamente:
+- ✅ Verifica y crea el archivo `.env` si no existe
+- ✅ Instala dependencias del backend y portal
+- ✅ Ejecuta migraciones de base de datos
+- ✅ Inicia el backend en el puerto 8000
+- ✅ Inicia el portal en el puerto 8501
+- ✅ Muestra las URLs de acceso y credenciales
+
+**El sistema estará disponible en:**
+- **Portal:** http://localhost:8501/portal
+- **Backend:** http://localhost:8000
+- **Admin:** http://localhost:8501/portal → Pestaña "⚙️ Administración"
+
+**Credenciales de administrador:**
+- Usuario: `admin`
+- Contraseña: `admin123`
+
+📖 **Ver guía completa de acceso:** [ACCESO_ADMIN.md](ACCESO_ADMIN.md)
+
+### 3. Inicio Manual (Alternativa)
+
+#### 3.1. Iniciar el Backend
 
 ```bash
 cd backend
@@ -155,7 +188,7 @@ El backend estará disponible en:
 - **Documentación:** http://localhost:8000/docs
 - **Health Check:** http://localhost:8000/api/healthz
 
-### 3. Iniciar el Portal
+#### 3.2. Iniciar el Portal
 
 ```bash
 cd portal
