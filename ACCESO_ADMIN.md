@@ -23,7 +23,7 @@ Este script:
 ```bash
 cd backend
 source venv/bin/activate
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+uvicorn app.main:app --host 0.0.0.0 --port 8601
 ```
 
 #### 2. Iniciar el Portal (en otra terminal)
@@ -31,7 +31,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```bash
 cd portal
 source venv/bin/activate
-streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
+streamlit run app/portal.py --server.port=8600 --server.baseUrlPath=/portal
 ```
 
 ## 🔑 Credenciales de Administrador
@@ -51,17 +51,17 @@ streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
 
 | Servicio | URL | Descripción |
 |----------|-----|-------------|
-| **Portal Principal** | http://localhost:8501/portal | Catálogo de aplicaciones |
-| **Panel de Admin** | http://localhost:8501/portal → Pestaña "⚙️ Administración" | Gestión de aplicaciones y métricas |
-| **Backend API** | http://localhost:8000 | API REST del backend |
-| **Documentación API** | http://localhost:8000/docs | Documentación interactiva (Swagger) |
-| **Health Check** | http://localhost:8000/api/healthz | Verificación de estado |
+| **Portal Principal** | http://localhost:8600/portal | Catálogo de aplicaciones |
+| **Panel de Admin** | http://localhost:8600/portal → Pestaña "⚙️ Administración" | Gestión de aplicaciones y métricas |
+| **Backend API** | http://localhost:8601 | API REST del backend |
+| **Documentación API** | http://localhost:8601/docs | Documentación interactiva (Swagger) |
+| **Health Check** | http://localhost:8601/api/healthz | Verificación de estado |
 
 ## 📋 Pasos para Acceder al Panel de Administración
 
 1. **Abre el portal en tu navegador:**
    ```
-   http://localhost:8501/portal
+   http://localhost:8600/portal
    ```
 
 2. **Ve a la pestaña "⚙️ Administración"** en la parte superior
@@ -132,7 +132,7 @@ streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
 **Solución:**
 1. Verifica que el backend esté ejecutándose:
    ```bash
-   curl http://localhost:8000/api/healthz
+   curl http://localhost:8601/api/healthz
    ```
    Debe responder: `{"status": "ok", ...}`
 
@@ -151,7 +151,7 @@ streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
 1. Verifica que el backend esté ejecutándose
 2. Verifica las aplicaciones registradas:
    ```bash
-   curl http://localhost:8000/api/apps
+   curl http://localhost:8601/api/apps
    ```
 3. Si no hay aplicaciones, regístralas desde el panel de admin
 
@@ -171,7 +171,7 @@ streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
 
 2. Verifica la variable `BACKEND_BASE_URL` en `.env`:
    ```
-   BACKEND_BASE_URL=http://localhost:8000
+   BACKEND_BASE_URL=http://localhost:8601
    ```
 
 3. Reinicia el backend y el portal
@@ -182,15 +182,15 @@ streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
 
 ```bash
 # Login
-curl -c cookies.txt -X POST http://localhost:8000/api/admin/login \
+curl -c cookies.txt -X POST http://localhost:8601/api/admin/login \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "admin123"}'
 
 # Listar todas las aplicaciones (admin)
-curl -b cookies.txt http://localhost:8000/api/admin/apps | python3 -m json.tool
+curl -b cookies.txt http://localhost:8601/api/admin/apps | python3 -m json.tool
 
 # Crear una aplicación
-curl -b cookies.txt -X POST http://localhost:8000/api/admin/apps \
+curl -b cookies.txt -X POST http://localhost:8601/api/admin/apps \
   -H "Content-Type: application/json" \
   -d '{
     "id": "app_test",
@@ -249,20 +249,20 @@ tail -f /tmp/portal.log
 pkill -f uvicorn && pkill -f streamlit
 
 # Verificar puertos en uso
-lsof -i :8000  # Backend
-lsof -i :8501  # Portal
+lsof -i :8601  # Backend
+lsof -i :8600  # Portal
 
 # Reiniciar backend
 cd backend
 pkill -f uvicorn
 source venv/bin/activate
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8601 --reload
 
 # Reiniciar portal
 cd portal
 pkill -f streamlit
 source venv/bin/activate
-streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
+streamlit run app/portal.py --server.port=8600 --server.baseUrlPath=/portal
 ```
 
 ## 📞 Soporte

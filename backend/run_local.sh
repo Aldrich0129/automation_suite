@@ -37,9 +37,9 @@ fi
 
 echo "✅ Backend listo"
 echo ""
-echo "🌐 Servidor escuchando en http://localhost:8000"
-echo "📖 Documentación en http://localhost:8000/docs"
+echo "🌐 Servidor escuchando en http://localhost:8601"
+echo "📖 Documentación en http://localhost:8601/docs"
 echo ""
 
 # Ejecutar servidor
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8601 --reload

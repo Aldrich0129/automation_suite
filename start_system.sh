@@ -58,7 +58,7 @@ start_backend() {
 
     # Iniciar servidor en background
     echo "  Iniciando servidor..."
-    nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
+    nohup uvicorn app.main:app --host 0.0.0.0 --port 8601 > /tmp/backend.log 2>&1 &
     BACKEND_PID=$!
     echo $BACKEND_PID > /tmp/backend.pid
 
@@ -67,7 +67,7 @@ start_backend() {
     # Esperar a que el backend esté listo
     echo "  Esperando a que el backend esté disponible..."
     for i in {1..10}; do
-        if curl -s http://localhost:8000/api/healthz >/dev/null 2>&1; then
+        if curl -s http://localhost:8601/api/healthz >/dev/null 2>&1; then
             echo -e "${GREEN}✅ Backend iniciado correctamente (PID: $BACKEND_PID)${NC}"
             return 0
         fi
@@ -95,7 +95,7 @@ start_portal() {
 
     # Iniciar streamlit en background
     echo "  Iniciando servidor..."
-    nohup streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal > /tmp/portal.log 2>&1 &
+    nohup streamlit run app/portal.py --server.port=8600 --server.baseUrlPath=/portal > /tmp/portal.log 2>&1 &
     PORTAL_PID=$!
     echo $PORTAL_PID > /tmp/portal.pid
 
@@ -135,8 +135,8 @@ stop_system() {
 }
 
 # Verificar si ya hay servicios corriendo
-if check_port 8000; then
-    echo -e "${YELLOW}⚠️  El puerto 8000 ya está en uso${NC}"
+if check_port 8601; then
+    echo -e "${YELLOW}⚠️  El puerto 8601 ya está en uso${NC}"
     echo "¿Desea detener el backend existente? (s/n)"
     read -r response
     if [[ "$response" =~ ^[Ss]$ ]]; then
@@ -147,8 +147,8 @@ if check_port 8000; then
     fi
 fi
 
-if check_port 8501; then
-    echo -e "${YELLOW}⚠️  El puerto 8501 ya está en uso${NC}"
+if check_port 8600; then
+    echo -e "${YELLOW}⚠️  El puerto 8600 ya está en uso${NC}"
     echo "¿Desea detener el portal existente? (s/n)"
     read -r response
     if [[ "$response" =~ ^[Ss]$ ]]; then
@@ -160,7 +160,7 @@ if check_port 8501; then
 fi
 
 # Iniciar servicios
-if ! check_port 8000; then
+if ! check_port 8601; then
     start_backend
 else
     echo -e "${GREEN}✅ Backend ya está ejecutándose${NC}"
@@ -168,7 +168,7 @@ fi
 
 echo ""
 
-if ! check_port 8501; then
+if ! check_port 8600; then
     start_portal
 else
     echo -e "${GREEN}✅ Portal ya está ejecutándose${NC}"
@@ -180,16 +180,16 @@ echo "║            ✅ SISTEMA INICIADO CORRECTAMENTE          ║"
 echo "╚═══════════════════════════════════════════════════════╝"
 echo ""
 echo -e "${GREEN}🌐 URLs de Acceso:${NC}"
-echo "  • Backend API:    http://localhost:8000"
-echo "  • Backend Docs:   http://localhost:8000/docs"
-echo "  • Portal:         http://localhost:8501/portal"
+echo "  • Backend API:    http://localhost:8601"
+echo "  • Backend Docs:   http://localhost:8601/docs"
+echo "  • Portal:         http://localhost:8600/portal"
 echo ""
 echo -e "${GREEN}🔐 Credenciales de Administrador:${NC}"
 echo "  • Usuario:    admin"
 echo "  • Contraseña: admin123"
 echo ""
 echo -e "${BLUE}📝 Para acceder al panel de administración:${NC}"
-echo "  1. Abre http://localhost:8501/portal en tu navegador"
+echo "  1. Abre http://localhost:8600/portal en tu navegador"
 echo "  2. Ve a la pestaña '⚙️ Administración'"
 echo "  3. Inicia sesión con las credenciales de arriba"
 echo ""

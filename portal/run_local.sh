@@ -32,9 +32,9 @@ pip install -r requirements.txt
 
 echo "✅ Portal listo"
 echo ""
-echo "🌐 Portal disponible en http://localhost:8501/portal"
-echo "⚙️  Acceso admin en http://localhost:8501/portal (pestaña Admin)"
+echo "🌐 Portal disponible en http://localhost:8600/portal"
+echo "⚙️  Acceso admin en http://localhost:8600/portal (pestaña Admin)"
 echo ""
 
 # Ejecutar portal
-streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
+streamlit run app/portal.py --server.port=8600 --server.baseUrlPath=/portal

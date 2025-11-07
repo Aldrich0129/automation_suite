@@ -93,6 +93,43 @@ automation-suite/
 └── README.md
 ```
 
+## 🔌 Arquitectura de Puertos
+
+El sistema utiliza un esquema de puertos secuencial para facilitar la escalabilidad:
+
+| Servicio | Puerto | URL | Descripción |
+|----------|--------|-----|-------------|
+| **Portal** | `8600` | http://localhost:8600/portal | Portal web principal y panel de administración |
+| **Backend** | `8601` | http://localhost:8601 | API REST y documentación (Swagger: /docs) |
+| **Aplicación 1** | `8602` | http://localhost:8602/* | Generador de Cartas de Manifestación |
+| **Aplicación 2** | `8603` | http://localhost:8603/* | (Reservado para futuras apps) |
+| **Aplicación N** | `860N` | http://localhost:860N/* | Esquema escalable para nuevas aplicaciones |
+
+### Ventajas de esta arquitectura:
+
+- **Escalabilidad:** Cada nueva aplicación obtiene el siguiente puerto disponible (8603, 8604, etc.)
+- **Claridad:** Los servicios principales (portal y backend) tienen puertos fijos y conocidos
+- **Aislamiento:** Cada aplicación puede ejecutarse independientemente en su propio puerto
+- **Sin conflictos:** El esquema numérico evita colisiones de puertos
+
+### Configuración en `.env`:
+
+```bash
+# Portal
+CORS_ALLOW_ORIGIN=http://localhost:8600
+
+# Backend
+BACKEND_PORT=8601
+BACKEND_BASE_URL=http://localhost:8601
+```
+
+### Al crear una nueva aplicación:
+
+1. Asigna el siguiente puerto disponible (ej: 8603)
+2. Configura el puerto en el script `run_local.sh` de la app
+3. Actualiza el archivo `.streamlit/config.toml` si usa Streamlit
+4. Documenta el puerto en el README de la aplicación
+
 ## 🚀 Instalación y Ejecución
 
 ### Requisitos Previos
@@ -143,14 +180,14 @@ Este script automáticamente:
 - ✅ Verifica y crea el archivo `.env` si no existe
 - ✅ Instala dependencias del backend y portal
 - ✅ Ejecuta migraciones de base de datos
-- ✅ Inicia el backend en el puerto 8000
-- ✅ Inicia el portal en el puerto 8501
+- ✅ Inicia el backend en el puerto 8601
+- ✅ Inicia el portal en el puerto 8600
 - ✅ Muestra las URLs de acceso y credenciales
 
 **El sistema estará disponible en:**
-- **Portal:** http://localhost:8501/portal
-- **Backend:** http://localhost:8000
-- **Admin:** http://localhost:8501/portal → Pestaña "⚙️ Administración"
+- **Portal:** http://localhost:8600/portal
+- **Backend:** http://localhost:8601
+- **Admin:** http://localhost:8600/portal → Pestaña "⚙️ Administración"
 
 **Credenciales de administrador:**
 - Usuario: `admin`
@@ -180,13 +217,13 @@ alembic upgrade head
 # Iniciar servidor
 ./run_local.sh
 # o manualmente:
-# uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+# uvicorn app.main:app --host 0.0.0.0 --port 8601 --reload
 ```
 
 El backend estará disponible en:
-- **API:** http://localhost:8000
-- **Documentación:** http://localhost:8000/docs
-- **Health Check:** http://localhost:8000/api/healthz
+- **API:** http://localhost:8601
+- **Documentación:** http://localhost:8601/docs
+- **Health Check:** http://localhost:8601/api/healthz
 
 #### 3.2. Iniciar el Portal
 
@@ -203,12 +240,12 @@ pip install -r requirements.txt
 # Iniciar portal
 ./run_local.sh
 # o manualmente:
-# streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
+# streamlit run app/portal.py --server.port=8600 --server.baseUrlPath=/portal
 ```
 
 El portal estará disponible en:
-- **Portal:** http://localhost:8501/portal
-- **Admin:** http://localhost:8501/portal (pestaña "⚙️ Administración")
+- **Portal:** http://localhost:8600/portal
+- **Admin:** http://localhost:8600/portal (pestaña "⚙️ Administración")
 
 ## 🔐 Credenciales por Defecto
 
@@ -228,7 +265,7 @@ Al iniciar por primera vez, se crea un usuario administrador con credenciales de
 
 ### Portal Principal
 
-1. Accede a http://localhost:8501/portal
+1. Accede a http://localhost:8600/portal
 2. Verás el catálogo de aplicaciones en formato de cuadrícula (3 columnas)
 3. Las aplicaciones habilitadas aparecen con colores modernos
 4. Las deshabilitadas están en la sección "En Desarrollo"
@@ -237,7 +274,7 @@ Al iniciar por primera vez, se crea un usuario administrador con credenciales de
 
 El panel de administración está completamente integrado en el portal. Para acceder:
 
-1. **Accede al Portal:** Abre http://localhost:8501/portal en tu navegador
+1. **Accede al Portal:** Abre http://localhost:8600/portal en tu navegador
 2. **Ve a la pestaña "⚙️ Administración"** en la parte superior del portal
 3. **Inicia sesión** con las credenciales de administrador:
    - Usuario: `admin`
@@ -264,10 +301,10 @@ cd backend
 
 # 2. En otra terminal, inicia el portal
 cd portal
-./run_local.sh  # O: streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
+./run_local.sh  # O: streamlit run app/portal.py --server.port=8600 --server.baseUrlPath=/portal
 
 # 3. Accede al portal
-# Navega a: http://localhost:8501/portal
+# Navega a: http://localhost:8600/portal
 
 # 4. Ve a la pestaña "⚙️ Administración" y haz login
 
@@ -284,7 +321,7 @@ cd portal
 # Al hacer click en "Abrir" desde el catálogo, pedirá la contraseña
 
 # 8. (Opcional) Envía telemetría de prueba
-curl -X POST http://localhost:8000/api/telemetry \
+curl -X POST http://localhost:8601/api/telemetry \
   -H "Content-Type: application/json" \
   -d '{
     "app_id": "app_test",
@@ -308,7 +345,7 @@ Las aplicaciones pueden tener 3 modos de acceso:
 Las aplicaciones pueden reportar eventos al backend:
 
 ```bash
-curl -X POST http://localhost:8000/api/telemetry \
+curl -X POST http://localhost:8601/api/telemetry \
   -H "Content-Type: application/json" \
   -d '{
     "app_id": "app_01",
@@ -352,8 +389,8 @@ python register_app.py
 ```
 
 La aplicación estará disponible en:
-- **Standalone:** http://localhost:8601/app_carta_manifestacion
-- **Portal:** http://localhost:8501/portal (en el catálogo)
+- **Standalone:** http://localhost:8602/app_carta_manifestacion
+- **Portal:** http://localhost:8600/portal (en el catálogo)
 
 **Documentación completa:** [apps/app_carta_manifestacion/README.md](apps/app_carta_manifestacion/README.md)
 
@@ -438,13 +475,13 @@ alembic downgrade -1
 
 1. **Verifica que el backend esté ejecutándose:**
    ```bash
-   curl http://localhost:8000/api/healthz
+   curl http://localhost:8601/api/healthz
    # Debe responder: {"status": "healthy"}
    ```
 
 2. **Revisa la configuración del backend en `.env`:**
    ```bash
-   BACKEND_BASE_URL=http://localhost:8000
+   BACKEND_BASE_URL=http://localhost:8601
    ```
 
 3. **Crea aplicaciones desde el panel de administración:**
@@ -453,12 +490,12 @@ alembic downgrade -1
 4. **Verifica que existan apps en el backend:**
    ```bash
    # Debes tener sesión admin, o usa curl con cookies
-   curl http://localhost:8000/api/apps
+   curl http://localhost:8601/api/apps
    ```
 
 ### Error "No se pudo conectar al backend"
 
-**Síntoma:** Aparece el error "No se pudo conectar al backend (http://localhost:8000)" en el portal
+**Síntoma:** Aparece el error "No se pudo conectar al backend (http://localhost:8601)" en el portal
 
 **Soluciones:**
 
@@ -468,15 +505,15 @@ alembic downgrade -1
    cp .env.example .env
    ```
 
-2. **Verifica que el backend esté corriendo en el puerto 8000:**
+2. **Verifica que el backend esté corriendo en el puerto 8601:**
    ```bash
    # Verificar si el backend está ejecutándose
-   curl http://localhost:8000/api/healthz
+   curl http://localhost:8601/api/healthz
    # Debe responder: {"status": "healthy"}
 
    # O verifica el puerto
-   lsof -i :8000
-   # O en Windows: netstat -ano | findstr :8000
+   lsof -i :8601
+   # O en Windows: netstat -ano | findstr :8601
    ```
 
 3. **Si el backend no está corriendo, inícialo:**
@@ -485,15 +522,15 @@ alembic downgrade -1
    ./run_local.sh
    # O manualmente:
    # source venv/bin/activate
-   # uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+   # uvicorn app.main:app --host 0.0.0.0 --port 8601 --reload
    ```
 
 4. **Revisa la variable `BACKEND_BASE_URL` en `.env`:**
-   - Debe apuntar a `http://localhost:8000`
+   - Debe apuntar a `http://localhost:8601`
    - Si cambias el puerto del backend, actualiza esta variable
 
 5. **Verifica CORS en el backend:**
-   - En `.env`, asegúrate de que `CORS_ALLOW_ORIGIN=http://localhost:8501`
+   - En `.env`, asegúrate de que `CORS_ALLOW_ORIGIN=http://localhost:8600`
    - Si cambias el puerto del portal, actualiza esta variable
 
 ### Error 401/403 en el panel de administración
@@ -536,7 +573,7 @@ alembic downgrade -1
 
 1. **Envía eventos de telemetría de prueba:**
    ```bash
-   curl -X POST http://localhost:8000/api/telemetry \
+   curl -X POST http://localhost:8601/api/telemetry \
      -H "Content-Type: application/json" \
      -d '{
        "app_id": "tu_app_id",
@@ -559,12 +596,12 @@ alembic downgrade -1
 **Soluciones:**
 
 1. **Accede a la URL correcta:**
-   - **Correcto:** http://localhost:8501/portal
-   - **Incorrecto:** http://localhost:8501 (sin /portal)
+   - **Correcto:** http://localhost:8600/portal
+   - **Incorrecto:** http://localhost:8600 (sin /portal)
 
 2. **Verifica que el script `run_local.sh` tenga el parámetro:**
    ```bash
-   streamlit run app/portal.py --server.port=8501 --server.baseUrlPath=/portal
+   streamlit run app/portal.py --server.port=8600 --server.baseUrlPath=/portal
    ```
 
 3. **Si usas un proxy/nginx, configura el `baseUrlPath` correctamente**
@@ -583,10 +620,10 @@ DATABASE_URL=sqlite+aiosqlite:///./automation.db
 SECRET_KEY=tu_clave_secreta
 ADMIN_DEFAULT_USER=admin
 ADMIN_DEFAULT_PASS=admin123
-CORS_ALLOW_ORIGIN=http://localhost:8501
+CORS_ALLOW_ORIGIN=http://localhost:8600
 
 # Portal
-BACKEND_BASE_URL=http://localhost:8000
+BACKEND_BASE_URL=http://localhost:8601
 PORTAL_BASE_PATH=/portal
 ```
 
@@ -618,7 +655,7 @@ TELEMETRY_TOKEN=mi_token_secreto
 
 Luego envía el token en el header:
 ```bash
-curl -X POST http://localhost:8000/api/telemetry \
+curl -X POST http://localhost:8601/api/telemetry \
   -H "X-Telemetry-Token: mi_token_secreto" \
   -H "Content-Type: application/json" \
   -d '...'
