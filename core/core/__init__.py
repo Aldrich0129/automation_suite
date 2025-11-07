@@ -1,12 +1,12 @@
 """
-M骴ulo Core - Automation Suite
+M贸dulo Core - Automation Suite
 ================================
 
-Este m骴ulo contiene la l骻ica com鷑 y utilidades compartidas
-entre todas las aplicaciones de la suite de automatizaci髇.
+Este m贸dulo contiene la l贸gica com煤n y utilidades compartidas
+entre todas las aplicaciones de la suite de automatizaci贸n.
 
 Incluye:
-- Configuraci髇 general (settings)
+- Configuraci贸n general (settings)
 - Utilidades comunes
 - Funciones reutilizables
 """

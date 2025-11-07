@@ -2,16 +2,16 @@
 Portal Principal - Automation Suite
 =====================================
 
-Este es el punto de entrada principal de la suite de automatización corporativa.
+Este es el punto de entrada principal de la suite de automatizaciÃ³n corporativa.
 Muestra un inventario de todas las aplicaciones disponibles y permite
 navegar hacia cada una de ellas.
 
 Funcionalidades:
 - Carga del inventario de apps desde apps_registry.yaml
-- Visualización de apps en formato de cuadrícula
-- Redirección a las URLs de las aplicaciones
+- VisualizaciÃ³n de apps en formato de cuadrÃ­cula
+- RedirecciÃ³n a las URLs de las aplicaciones
 - Filtrado por estado (activada/desactivada)
-- Visualización de etiquetas por aplicación
+- VisualizaciÃ³n de etiquetas por aplicaciÃ³n
 
 Uso:
     streamlit run portal/app/portal.py --server.port=8501 --server.baseUrlPath=/portal
@@ -25,14 +25,14 @@ from typing import Dict, List
 import streamlit as st
 import yaml
 
-# Añadir el directorio core al path para poder importar el módulo
+# AÃ±adir el directorio core al path para poder importar el mÃ³dulo
 CORE_PATH = Path(__file__).parent.parent.parent / "core"
 sys.path.insert(0, str(CORE_PATH))
 
 try:
     from core.settings import get_backend_base_url, get_portal_base_path
 except ImportError:
-    # Fallback si no se puede importar el módulo core
+    # Fallback si no se puede importar el mÃ³dulo core
     def get_backend_base_url():
         return os.getenv("BACKEND_BASE_URL", "http://localhost:8601")
 
@@ -41,12 +41,12 @@ except ImportError:
 
 
 # ===========================
-# Configuración de la Página
+# ConfiguraciÃ³n de la PÃ¡gina
 # ===========================
 
 st.set_page_config(
     page_title="Automation Suite - Portal",
-    page_icon="=€",
+    page_icon="ğŸ¢",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -71,22 +71,22 @@ def load_apps_registry(registry_path: str) -> List[Dict]:
             data = yaml.safe_load(file)
             return data.get('apps', [])
     except FileNotFoundError:
-        st.error(f"L No se encontró el archivo de registro: {registry_path}")
+        st.error(f"âŒ No se encontrÃ³ el archivo de registro: {registry_path}")
         return []
     except yaml.YAMLError as e:
-        st.error(f"L Error al leer el archivo YAML: {e}")
+        st.error(f"âŒ Error al leer el archivo YAML: {e}")
         return []
     except Exception as e:
-        st.error(f"L Error inesperado: {e}")
+        st.error(f"âŒ Error inesperado: {e}")
         return []
 
 
 def render_app_card(app: Dict, backend_url: str):
     """
-    Renderiza una tarjeta individual para una aplicación.
+    Renderiza una tarjeta individual para una aplicaciÃ³n.
 
     Args:
-        app (Dict): Diccionario con los datos de la aplicación
+        app (Dict): Diccionario con los datos de la aplicaciÃ³n
         backend_url (str): URL base del backend
     """
     app_id = app.get('id', 'N/A')
@@ -99,8 +99,8 @@ def render_app_card(app: Dict, backend_url: str):
     with st.container():
         st.markdown("---")
 
-        # Título de la aplicación
-        st.subheader(f"=9 {app_name}")
+        # TÃ­tulo de la aplicaciÃ³n
+        st.subheader(f"ğŸ“± {app_name}")
 
         # Mostrar ID
         st.caption(f"**ID:** `{app_id}`")
@@ -110,14 +110,14 @@ def render_app_card(app: Dict, backend_url: str):
             tags_text = " ".join([f"`{tag}`" for tag in app_tags])
             st.markdown(f"**Etiquetas:** {tags_text}")
 
-        # Botón de acción según el estado
+        # BotÃ³n de acciÃ³n segÃºn el estado
         if app_enabled:
             full_url = f"{backend_url}{app_path}"
-            st.success(" **Estado:** Activada")
+            st.success("âœ… **Estado:** Activada")
 
-            # Botón para abrir la aplicación
+            # BotÃ³n para abrir la aplicaciÃ³n
             if st.button(
-                "=€ Abrir Aplicación",
+                "ğŸš€ Abrir AplicaciÃ³n",
                 key=f"btn_{app_id}",
                 use_container_width=True
             ):
@@ -127,9 +127,9 @@ def render_app_card(app: Dict, backend_url: str):
                 )
                 st.info(f"Redirigiendo a: {full_url}")
         else:
-            st.warning("=4 **Estado:** Desactivada")
+            st.warning("âš ï¸ **Estado:** Desactivada")
             st.button(
-                "L No Disponible",
+                "âŒ No Disponible",
                 key=f"btn_{app_id}",
                 disabled=True,
                 use_container_width=True
@@ -138,7 +138,7 @@ def render_app_card(app: Dict, backend_url: str):
 
 def render_statistics(apps: List[Dict]):
     """
-    Renderiza estadísticas del inventario de aplicaciones.
+    Renderiza estadÃ­sticas del inventario de aplicaciones.
 
     Args:
         apps (List[Dict]): Lista de aplicaciones
@@ -150,13 +150,13 @@ def render_statistics(apps: List[Dict]):
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.metric("=Ê Total de Aplicaciones", total_apps)
+        st.metric("ğŸ“Š Total de Aplicaciones", total_apps)
 
     with col2:
-        st.metric(" Aplicaciones Activas", enabled_apps)
+        st.metric("âœ… Aplicaciones Activas", enabled_apps)
 
     with col3:
-        st.metric("=4 Aplicaciones Inactivas", disabled_apps)
+        st.metric("âš ï¸ Aplicaciones Inactivas", disabled_apps)
 
 
 # ===========================
@@ -165,18 +165,18 @@ def render_statistics(apps: List[Dict]):
 
 def main():
     """
-    Función principal que renderiza la interfaz del portal.
+    FunciÃ³n principal que renderiza la interfaz del portal.
     """
     # Cabecera
-    st.title("=€ Automation Suite")
+    st.title("ğŸ¢ Automation Suite")
     st.subheader("Portal de Aplicaciones Corporativas")
     st.markdown("---")
 
-    # Cargar configuración
+    # Cargar configuraciÃ³n
     backend_url = get_backend_base_url()
 
-    # Mostrar información de configuración (opcional, para debug)
-    with st.expander("™ Configuración del Sistema"):
+    # Mostrar informaciÃ³n de configuraciÃ³n (opcional, para debug)
+    with st.expander("âš™ï¸ ConfiguraciÃ³n del Sistema"):
         st.code(f"Backend URL: {backend_url}", language="text")
         st.code(f"Portal Base Path: {get_portal_base_path()}", language="text")
 
@@ -184,21 +184,21 @@ def main():
     registry_path = Path(__file__).parent.parent / "apps_registry.yaml"
     apps = load_apps_registry(str(registry_path))
 
-    # Mostrar estadísticas
+    # Mostrar estadÃ­sticas
     if apps:
-        st.markdown("### =Ê Estadísticas")
+        st.markdown("### ğŸ“Š EstadÃ­sticas")
         render_statistics(apps)
         st.markdown("---")
 
     # Mostrar aplicaciones
     if not apps:
-        st.warning("  No se encontraron aplicaciones registradas.")
+        st.warning("âš ï¸ No se encontraron aplicaciones registradas.")
         st.info(
-            "=¡ **Sugerencia:** Añade aplicaciones en el archivo "
-            "`portal/apps_registry.yaml` para que aparezcan aquí."
+            "ğŸ’¡ **Sugerencia:** AÃ±ade aplicaciones en el archivo "
+            "`portal/apps_registry.yaml` para que aparezcan aquÃ­."
         )
     else:
-        st.markdown("### =Á Aplicaciones Disponibles")
+        st.markdown("### ğŸ“± Aplicaciones Disponibles")
 
         # Filtro por estado
         filter_option = st.radio(
@@ -217,7 +217,7 @@ def main():
 
         # Mostrar mensaje si no hay resultados
         if not filtered_apps:
-            st.info(f"9 No hay aplicaciones para mostrar con el filtro: **{filter_option}**")
+            st.info(f"â„¹ï¸ No hay aplicaciones para mostrar con el filtro: **{filter_option}**")
         else:
             # Renderizar aplicaciones en columnas (2 por fila)
             num_cols = 2
@@ -232,7 +232,7 @@ def main():
     # Footer
     st.markdown("---")
     st.caption(
-        "=' **Automation Suite** v0.1.0 | "
+        "ğŸ¢ **Automation Suite** v0.1.0 | "
         "Desarrollado para automatizaciones corporativas internas"
     )
 
