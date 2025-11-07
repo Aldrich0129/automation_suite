@@ -1,0 +1,62 @@
+# Registro de Aplicaciones - Automation Suite
+# ============================================
+#
+# Este archivo contiene el inventario de todas las aplicaciones
+# disponibles en la suite de automatización corporativa.
+#
+# Campos:
+#   - id: Identificador único de la aplicación
+#   - name: Nombre descriptivo de la aplicación
+#   - path: Ruta o URL relativa de la aplicación
+#   - tags: Lista de etiquetas para categorización (opcional)
+#   - enabled: Indica si la aplicación está activada (true/false)
+#
+# Ejemplo de uso:
+#   Para añadir una nueva aplicación, simplemente agrega un nuevo elemento
+#   a la lista siguiendo el formato existente.
+
+apps:
+  - id: "app_01"
+    name: "Gestión de Inventarios"
+    path: "/apps/inventory"
+    tags:
+      - "logística"
+      - "almacén"
+      - "inventario"
+    enabled: true
+
+  - id: "app_02"
+    name: "Procesamiento de Facturas"
+    path: "/apps/invoicing"
+    tags:
+      - "finanzas"
+      - "contabilidad"
+      - "automatización"
+    enabled: true
+
+  - id: "app_03"
+    name: "Dashboard de Métricas"
+    path: "/apps/metrics"
+    tags:
+      - "análisis"
+      - "reporting"
+      - "métricas"
+    enabled: false
+
+  - id: "app_04"
+    name: "Generador de Reportes"
+    path: "/apps/reports"
+    tags:
+      - "reporting"
+      - "documentos"
+      - "automatización"
+    enabled: true
+
+  - id: "app_05"
+    name: "Validador de Datos"
+    path: "/apps/validator"
+    tags:
+      - "calidad"
+      - "validación"
+      - "datos"
+    enabled: false
