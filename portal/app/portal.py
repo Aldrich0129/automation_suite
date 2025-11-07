@@ -51,8 +51,8 @@ except ImportError:
 # ===========================
 
 st.set_page_config(
-    page_title="Automation Suite - Portal",
-    page_icon="🏢",
+    page_title="Automation Suite Portal",
+    page_icon="🔷",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -139,38 +139,43 @@ def render_app_card(app: Dict, backend_url: str):
     if app_enabled:
         full_url = f"{backend_url}{app_path}"
 
-        # Estilo del botón con CSS personalizado - Colores modernos
+        # Estilo del botón con CSS personalizado - Diseño azul profesional
         st.markdown(f"""
             <style>
             .app-card-{app_id} {{
-                background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
-                border-radius: 20px;
-                padding: 28px 20px;
+                background: linear-gradient(135deg, #1E88E5 0%, #1976D2 50%, #1565C0 100%);
+                border-radius: 16px;
+                padding: 32px 24px;
                 text-align: center;
                 margin: 12px 0;
-                box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
-                transition: all 0.3s ease;
+                box-shadow: 0 4px 16px rgba(30, 136, 229, 0.25);
+                transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                border: 1px solid rgba(255, 255, 255, 0.1);
             }}
             .app-card-{app_id}:hover {{
-                transform: translateY(-6px);
-                box-shadow: 0 8px 30px rgba(139, 92, 246, 0.5);
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 12px 32px rgba(30, 136, 229, 0.4);
+                border-color: rgba(255, 255, 255, 0.2);
             }}
             .app-icon {{
-                font-size: 56px;
-                margin-bottom: 12px;
+                font-size: 60px;
+                margin-bottom: 16px;
+                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
             }}
             .app-title {{
                 color: white;
-                font-size: 20px;
+                font-size: 22px;
                 font-weight: 700;
-                margin: 12px 0 8px 0;
-                letter-spacing: -0.02em;
+                margin: 12px 0 10px 0;
+                letter-spacing: -0.01em;
+                font-family: 'Inter', 'Roboto', -apple-system, sans-serif;
             }}
             .app-description {{
-                color: rgba(255, 255, 255, 0.95);
-                font-size: 13px;
+                color: rgba(255, 255, 255, 0.92);
+                font-size: 14px;
                 line-height: 1.6;
                 margin-bottom: 16px;
+                font-family: 'Inter', 'Roboto', -apple-system, sans-serif;
             }}
             </style>
         """, unsafe_allow_html=True)
@@ -202,30 +207,33 @@ def render_app_card(app: Dict, backend_url: str):
         st.markdown(f"""
             <style>
             .app-card-disabled-{app_id} {{
-                background: #f5f5f5;
-                border: 2px dashed #d0d0d0;
+                background: #f8f9fa;
+                border: 2px dashed #cbd5e0;
                 border-radius: 16px;
                 padding: 32px 24px;
                 text-align: center;
-                margin: 16px 0;
-                opacity: 0.6;
+                margin: 12px 0;
+                opacity: 0.7;
             }}
             .app-icon-disabled {{
-                font-size: 64px;
+                font-size: 60px;
                 margin-bottom: 16px;
                 filter: grayscale(100%);
+                opacity: 0.5;
             }}
             .app-title-disabled {{
-                color: #666;
-                font-size: 24px;
+                color: #64748b;
+                font-size: 22px;
                 font-weight: 600;
-                margin: 16px 0 8px 0;
+                margin: 12px 0 10px 0;
+                font-family: 'Inter', 'Roboto', -apple-system, sans-serif;
             }}
             .app-description-disabled {{
-                color: #888;
+                color: #94a3b8;
                 font-size: 14px;
-                line-height: 1.5;
-                margin-bottom: 20px;
+                line-height: 1.6;
+                margin-bottom: 16px;
+                font-family: 'Inter', 'Roboto', -apple-system, sans-serif;
             }}
             </style>
         """, unsafe_allow_html=True)
@@ -295,41 +303,92 @@ def show_portal_content():
     """
     Muestra el contenido principal del portal.
     """
-    # Estilo global minimalista
+    # Estilo global minimalista y profesional
     st.markdown("""
         <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        * {
+            font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .main {
+            background-color: #f7fafc;
+        }
+
         .main-header {
             text-align: center;
-            padding: 40px 0 20px 0;
+            padding: 48px 0 32px 0;
+            background: linear-gradient(180deg, #ffffff 0%, #f7fafc 100%);
+            border-bottom: 1px solid #e2e8f0;
+            margin: -20px -40px 40px -40px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            backdrop-filter: blur(10px);
         }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .logo-icon {
+            font-size: 56px;
+            filter: drop-shadow(0 4px 6px rgba(30, 136, 229, 0.3));
+        }
+
         .main-title {
-            font-size: 48px;
+            font-size: 42px;
             font-weight: 800;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            background: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 8px;
+            letter-spacing: -0.02em;
         }
+
         .main-subtitle {
-            font-size: 18px;
+            font-size: 17px;
             color: #64748b;
             font-weight: 500;
+            letter-spacing: -0.01em;
         }
+
         .stButton > button {
-            height: 54px;
+            height: 56px;
             font-size: 16px;
             font-weight: 600;
-            border-radius: 14px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .stButton > button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(30, 136, 229, 0.3);
+        }
+
+        [data-testid="stExpander"] {
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
         }
         </style>
     """, unsafe_allow_html=True)
 
-    # Cabecera minimalista
+    # Cabecera con logo y título
     st.markdown("""
         <div class="main-header">
-            <div class="main-title">🏢 Automation Suite</div>
-            <div class="main-subtitle">Plataforma de Automatización Corporativa</div>
+            <div class="logo-container">
+                <div class="logo-icon">🔷</div>
+            </div>
+            <div class="main-title">Automation Suite Portal</div>
+            <div class="main-subtitle">Plataforma Corporativa de Automatización</div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -379,15 +438,25 @@ def show_portal_content():
                             with col:
                                 render_app_card(inactive_apps[idx], backend_url)
 
-    # Footer minimalista
+    # Footer profesional
     st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("---")
-    st.markdown(
-        "<div style='text-align: center; color: #a0aec0; font-size: 14px;'>"
-        "Automation Suite v0.1.0 | Desarrollado para automatizaciones corporativas"
-        "</div>",
-        unsafe_allow_html=True
-    )
+    st.markdown("""
+        <style>
+        .footer {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            padding: 24px 0;
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.01em;
+        }
+        </style>
+        <div class="footer">
+            © Forvis Mazars Automation Suite – 2025
+        </div>
+    """, unsafe_allow_html=True)
 
 
 # ===========================
