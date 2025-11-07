@@ -1,0 +1,30 @@
+# Backend Requirements - Automation Suite
+# =========================================
+
+# FastAPI y servidor
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# Base de datos
+sqlalchemy>=2.0.23
+alembic>=1.12.1
+
+# Async support
+aiosqlite>=0.19.0
+asyncpg>=0.29.0  # Para PostgreSQL async
+
+# Validación y configuración
+pydantic>=2.5.0
+python-dotenv>=1.0.0
+
+# Seguridad
+bcrypt>=4.1.1
+
+# YAML (para seed)
+PyYAML>=6.0.1
+
+# Testing (opcional)
+pytest>=7.4.3
+pytest-asyncio>=0.21.1
+httpx>=0.25.1

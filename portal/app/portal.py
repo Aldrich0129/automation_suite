@@ -25,6 +25,12 @@ from typing import Dict, List
 import streamlit as st
 import yaml
 
+# Importar panel admin
+try:
+    from admin_pages import show_admin_panel
+except ImportError:
+    show_admin_panel = None
+
 # Añadir el directorio core al path para poder importar el módulo
 CORE_PATH = Path(__file__).parent.parent.parent / "core"
 sys.path.insert(0, str(CORE_PATH))
@@ -133,37 +139,38 @@ def render_app_card(app: Dict, backend_url: str):
     if app_enabled:
         full_url = f"{backend_url}{app_path}"
 
-        # Estilo del botón con CSS personalizado
+        # Estilo del botón con CSS personalizado - Colores modernos
         st.markdown(f"""
             <style>
             .app-card-{app_id} {{
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                border-radius: 16px;
-                padding: 32px 24px;
+                background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+                border-radius: 20px;
+                padding: 28px 20px;
                 text-align: center;
-                margin: 16px 0;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                transition: transform 0.2s;
+                margin: 12px 0;
+                box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+                transition: all 0.3s ease;
             }}
             .app-card-{app_id}:hover {{
-                transform: translateY(-4px);
-                box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+                transform: translateY(-6px);
+                box-shadow: 0 8px 30px rgba(139, 92, 246, 0.5);
             }}
             .app-icon {{
-                font-size: 64px;
-                margin-bottom: 16px;
+                font-size: 56px;
+                margin-bottom: 12px;
             }}
             .app-title {{
                 color: white;
-                font-size: 24px;
-                font-weight: 600;
-                margin: 16px 0 8px 0;
+                font-size: 20px;
+                font-weight: 700;
+                margin: 12px 0 8px 0;
+                letter-spacing: -0.02em;
             }}
             .app-description {{
-                color: rgba(255, 255, 255, 0.9);
-                font-size: 14px;
-                line-height: 1.5;
-                margin-bottom: 20px;
+                color: rgba(255, 255, 255, 0.95);
+                font-size: 13px;
+                line-height: 1.6;
+                margin-bottom: 16px;
             }}
             </style>
         """, unsafe_allow_html=True)
@@ -271,6 +278,23 @@ def main():
     """
     Función principal que renderiza la interfaz del portal.
     """
+    # Navegación principal con tabs
+    if show_admin_panel is not None:
+        tab1, tab2 = st.tabs(["🏠 Portal", "⚙️ Administración"])
+
+        with tab1:
+            show_portal_content()
+
+        with tab2:
+            show_admin_panel()
+    else:
+        show_portal_content()
+
+
+def show_portal_content():
+    """
+    Muestra el contenido principal del portal.
+    """
     # Estilo global minimalista
     st.markdown("""
         <style>
@@ -280,20 +304,23 @@ def main():
         }
         .main-title {
             font-size: 48px;
-            font-weight: 700;
-            color: #2d3748;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 8px;
         }
         .main-subtitle {
             font-size: 18px;
-            color: #718096;
-            font-weight: 400;
+            color: #64748b;
+            font-weight: 500;
         }
         .stButton > button {
-            height: 60px;
-            font-size: 18px;
+            height: 54px;
+            font-size: 16px;
             font-weight: 600;
-            border-radius: 12px;
+            border-radius: 14px;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -329,8 +356,8 @@ def main():
 
         # Mostrar aplicaciones activas
         if active_apps:
-            # Renderizar en cuadrícula de 2 columnas
-            num_cols = 2
+            # Renderizar en cuadrícula de 3 columnas
+            num_cols = 3
             for i in range(0, len(active_apps), num_cols):
                 cols = st.columns(num_cols)
                 for j, col in enumerate(cols):
@@ -343,7 +370,7 @@ def main():
         if inactive_apps:
             st.markdown("<br>", unsafe_allow_html=True)
             with st.expander(f"📋 Aplicaciones en Desarrollo ({len(inactive_apps)})"):
-                num_cols = 2
+                num_cols = 3
                 for i in range(0, len(inactive_apps), num_cols):
                     cols = st.columns(num_cols)
                     for j, col in enumerate(cols):
