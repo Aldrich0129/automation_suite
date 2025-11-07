@@ -34,7 +34,7 @@ class Settings:
     ADMIN_DEFAULT_PASS: str = os.getenv("ADMIN_DEFAULT_PASS", "admin123")
 
     # CORS
-    CORS_ALLOW_ORIGIN: str = os.getenv("CORS_ALLOW_ORIGIN", "http://localhost:8501")
+    CORS_ALLOW_ORIGIN: str = os.getenv("CORS_ALLOW_ORIGIN", "http://localhost:8600")
 
     # Sesión
     SESSION_EXPIRE_HOURS: int = int(os.getenv("SESSION_EXPIRE_HOURS", "8"))
@@ -49,7 +49,7 @@ class Settings:
 
     # Servidor
     HOST: str = os.getenv("BACKEND_HOST", "0.0.0.0")
-    PORT: int = int(os.getenv("BACKEND_PORT", "8000"))
+    PORT: int = int(os.getenv("BACKEND_PORT", "8601"))
 
     # Seed
     APPS_REGISTRY_PATH: Optional[str] = os.getenv("APPS_REGISTRY_PATH")

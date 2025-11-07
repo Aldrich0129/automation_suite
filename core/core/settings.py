@@ -17,14 +17,14 @@ def get_backend_base_url() -> str:
     Obtiene la URL base del backend desde las variables de entorno.
 
     Returns:
-        str: URL base del backend. Por defecto: 'http://localhost:8000'
+        str: URL base del backend. Por defecto: 'http://localhost:8601'
 
     Example:
         >>> url = get_backend_base_url()
         >>> print(url)
-        'http://localhost:8000'
+        'http://localhost:8601'
     """
-    return os.getenv("BACKEND_BASE_URL", "http://localhost:8000")
+    return os.getenv("BACKEND_BASE_URL", "http://localhost:8601")
 
 
 def get_portal_base_path() -> str:

@@ -14,7 +14,7 @@ Funcionalidades:
 - Visualización de etiquetas por aplicación
 
 Uso:
-    streamlit run portal/app/portal.py --server.port=8501 --server.baseUrlPath=/portal
+    streamlit run portal/app/portal.py --server.port=8600 --server.baseUrlPath=/portal
 """
 
 import os
@@ -46,7 +46,7 @@ try:
 except ImportError:
     # Fallback si no se puede importar el módulo core
     def get_backend_base_url():
-        return os.getenv("BACKEND_BASE_URL", "http://localhost:8000")
+        return os.getenv("BACKEND_BASE_URL", "http://localhost:8601")
 
     def get_portal_base_path():
         return os.getenv("PORTAL_BASE_PATH", "/portal")
