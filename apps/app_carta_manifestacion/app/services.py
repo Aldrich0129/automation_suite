@@ -32,7 +32,7 @@ try:
     from core.settings import get_backend_base_url
 except ImportError:
     def get_backend_base_url():
-        return os.getenv("BACKEND_BASE_URL", "http://localhost:8000")
+        return os.getenv("BACKEND_BASE_URL", "http://localhost:8601")
 
 
 class CartaManifestacionService:
