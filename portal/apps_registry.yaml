@@ -7,6 +7,7 @@
 # Campos:
 #   - id: Identificador único de la aplicación
 #   - name: Nombre descriptivo de la aplicación
+#   - description: Breve descripción de la funcionalidad
 #   - path: Ruta o URL relativa de la aplicación
 #   - tags: Lista de etiquetas para categorización (opcional)
 #   - enabled: Indica si la aplicación está activada (true/false)
@@ -18,6 +19,7 @@
 apps:
   - id: "app_01"
     name: "Gestión de Inventarios"
+    description: "Controla y administra el inventario de productos en tiempo real"
     path: "/apps/inventory"
     tags:
       - "logística"
@@ -27,6 +29,7 @@ apps:
 
   - id: "app_02"
     name: "Procesamiento de Facturas"
+    description: "Automatiza la validación y procesamiento de facturas electrónicas"
     path: "/apps/invoicing"
     tags:
       - "finanzas"
@@ -36,6 +39,7 @@ apps:
 
   - id: "app_03"
     name: "Dashboard de Métricas"
+    description: "Visualiza KPIs y métricas clave del negocio en tiempo real"
     path: "/apps/metrics"
     tags:
       - "análisis"
@@ -45,6 +49,7 @@ apps:
 
   - id: "app_04"
     name: "Generador de Reportes"
+    description: "Crea reportes automatizados y personalizables en múltiples formatos"
     path: "/apps/reports"
     tags:
       - "reporting"
@@ -54,6 +59,7 @@ apps:
 
   - id: "app_05"
     name: "Validador de Datos"
+    description: "Valida y verifica la calidad e integridad de datos importados"
     path: "/apps/validator"
     tags:
       - "calidad"
