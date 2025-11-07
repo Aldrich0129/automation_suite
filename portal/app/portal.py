@@ -81,9 +81,39 @@ def load_apps_registry(registry_path: str) -> List[Dict]:
         return []
 
 
+def get_app_icon(tags: List[str]) -> str:
+    """
+    Retorna un icono apropiado basado en las etiquetas de la aplicación.
+
+    Args:
+        tags (List[str]): Lista de etiquetas de la aplicación
+
+    Returns:
+        str: Emoji representativo
+    """
+    icon_map = {
+        'logística': '📦',
+        'finanzas': '💰',
+        'análisis': '📊',
+        'reporting': '📈',
+        'calidad': '✅',
+        'inventario': '📦',
+        'contabilidad': '💼',
+        'validación': '🔍',
+        'documentos': '📄',
+        'métricas': '📉',
+    }
+
+    for tag in tags:
+        if tag.lower() in icon_map:
+            return icon_map[tag.lower()]
+
+    return '🔧'
+
+
 def render_app_card(app: Dict, backend_url: str):
     """
-    Renderiza una tarjeta individual para una aplicación.
+    Renderiza una tarjeta minimalista para una aplicación.
 
     Args:
         app (Dict): Diccionario con los datos de la aplicación
@@ -91,45 +121,119 @@ def render_app_card(app: Dict, backend_url: str):
     """
     app_id = app.get('id', 'N/A')
     app_name = app.get('name', 'Sin nombre')
+    app_description = app.get('description', 'Sin descripción disponible')
     app_path = app.get('path', '/')
     app_tags = app.get('tags', [])
     app_enabled = app.get('enabled', False)
 
-    # Crear el contenedor de la tarjeta
-    with st.container():
-        st.markdown("---")
+    # Obtener icono según las etiquetas
+    icon = get_app_icon(app_tags)
 
-        # Título de la aplicación
-        st.subheader(f"📱 {app_name}")
+    # Crear contenedor con estilo minimalista
+    if app_enabled:
+        full_url = f"{backend_url}{app_path}"
 
-        # Mostrar ID
-        st.caption(f"**ID:** `{app_id}`")
+        # Estilo del botón con CSS personalizado
+        st.markdown(f"""
+            <style>
+            .app-card-{app_id} {{
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 16px;
+                padding: 32px 24px;
+                text-align: center;
+                margin: 16px 0;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: transform 0.2s;
+            }}
+            .app-card-{app_id}:hover {{
+                transform: translateY(-4px);
+                box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+            }}
+            .app-icon {{
+                font-size: 64px;
+                margin-bottom: 16px;
+            }}
+            .app-title {{
+                color: white;
+                font-size: 24px;
+                font-weight: 600;
+                margin: 16px 0 8px 0;
+            }}
+            .app-description {{
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 14px;
+                line-height: 1.5;
+                margin-bottom: 20px;
+            }}
+            </style>
+        """, unsafe_allow_html=True)
 
-        # Mostrar etiquetas si existen
-        if app_tags:
-            tags_text = " ".join([f"`{tag}`" for tag in app_tags])
-            st.markdown(f"**Etiquetas:** {tags_text}")
+        # Contenedor de la tarjeta
+        with st.container():
+            st.markdown(f"""
+                <div class="app-card-{app_id}">
+                    <div class="app-icon">{icon}</div>
+                    <div class="app-title">{app_name}</div>
+                    <div class="app-description">{app_description}</div>
+                </div>
+            """, unsafe_allow_html=True)
 
-        # Botón de acción según el estado
-        if app_enabled:
-            full_url = f"{backend_url}{app_path}"
-            st.success("✅ **Estado:** Activada")
-
-            # Botón para abrir la aplicación
+            # Botón grande para abrir la aplicación
             if st.button(
-                "🚀 Abrir Aplicación",
+                f"▶ Abrir {app_name}",
                 key=f"btn_{app_id}",
-                use_container_width=True
+                use_container_width=True,
+                type="primary"
             ):
                 st.markdown(
                     f'<meta http-equiv="refresh" content="0; url={full_url}">',
                     unsafe_allow_html=True
                 )
-                st.info(f"Redirigiendo a: {full_url}")
-        else:
-            st.warning("⚠️ **Estado:** Desactivada")
+                st.success(f"Redirigiendo a {app_name}...")
+    else:
+        # Aplicación desactivada - estilo más sutil
+        st.markdown(f"""
+            <style>
+            .app-card-disabled-{app_id} {{
+                background: #f5f5f5;
+                border: 2px dashed #d0d0d0;
+                border-radius: 16px;
+                padding: 32px 24px;
+                text-align: center;
+                margin: 16px 0;
+                opacity: 0.6;
+            }}
+            .app-icon-disabled {{
+                font-size: 64px;
+                margin-bottom: 16px;
+                filter: grayscale(100%);
+            }}
+            .app-title-disabled {{
+                color: #666;
+                font-size: 24px;
+                font-weight: 600;
+                margin: 16px 0 8px 0;
+            }}
+            .app-description-disabled {{
+                color: #888;
+                font-size: 14px;
+                line-height: 1.5;
+                margin-bottom: 20px;
+            }}
+            </style>
+        """, unsafe_allow_html=True)
+
+        with st.container():
+            st.markdown(f"""
+                <div class="app-card-disabled-{app_id}">
+                    <div class="app-icon-disabled">{icon}</div>
+                    <div class="app-title-disabled">{app_name}</div>
+                    <div class="app-description-disabled">{app_description}</div>
+                </div>
+            """, unsafe_allow_html=True)
+
             st.button(
-                "❌ No Disponible",
+                "⏸ No Disponible",
                 key=f"btn_{app_id}",
                 disabled=True,
                 use_container_width=True
@@ -167,28 +271,49 @@ def main():
     """
     Función principal que renderiza la interfaz del portal.
     """
-    # Cabecera
-    st.title("🏢 Automation Suite")
-    st.subheader("Portal de Aplicaciones Corporativas")
-    st.markdown("---")
+    # Estilo global minimalista
+    st.markdown("""
+        <style>
+        .main-header {
+            text-align: center;
+            padding: 40px 0 20px 0;
+        }
+        .main-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .main-subtitle {
+            font-size: 18px;
+            color: #718096;
+            font-weight: 400;
+        }
+        .stButton > button {
+            height: 60px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 12px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # Cabecera minimalista
+    st.markdown("""
+        <div class="main-header">
+            <div class="main-title">🏢 Automation Suite</div>
+            <div class="main-subtitle">Plataforma de Automatización Corporativa</div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
 
     # Cargar configuración
     backend_url = get_backend_base_url()
 
-    # Mostrar información de configuración (opcional, para debug)
-    with st.expander("⚙️ Configuración del Sistema"):
-        st.code(f"Backend URL: {backend_url}", language="text")
-        st.code(f"Portal Base Path: {get_portal_base_path()}", language="text")
-
     # Cargar el inventario de aplicaciones
     registry_path = Path(__file__).parent.parent / "apps_registry.yaml"
     apps = load_apps_registry(str(registry_path))
-
-    # Mostrar estadísticas
-    if apps:
-        st.markdown("### 📊 Estadísticas")
-        render_statistics(apps)
-        st.markdown("---")
 
     # Mostrar aplicaciones
     if not apps:
@@ -198,42 +323,43 @@ def main():
             "`portal/apps_registry.yaml` para que aparezcan aquí."
         )
     else:
-        st.markdown("### 📱 Aplicaciones Disponibles")
+        # Separar aplicaciones activas e inactivas
+        active_apps = [app for app in apps if app.get('enabled', False)]
+        inactive_apps = [app for app in apps if not app.get('enabled', False)]
 
-        # Filtro por estado
-        filter_option = st.radio(
-            "Filtrar por estado:",
-            ["Todas", "Solo Activas", "Solo Inactivas"],
-            horizontal=True,
-            key="filter_status"
-        )
-
-        # Aplicar filtro
-        filtered_apps = apps
-        if filter_option == "Solo Activas":
-            filtered_apps = [app for app in apps if app.get('enabled', False)]
-        elif filter_option == "Solo Inactivas":
-            filtered_apps = [app for app in apps if not app.get('enabled', False)]
-
-        # Mostrar mensaje si no hay resultados
-        if not filtered_apps:
-            st.info(f"ℹ️ No hay aplicaciones para mostrar con el filtro: **{filter_option}**")
-        else:
-            # Renderizar aplicaciones en columnas (2 por fila)
+        # Mostrar aplicaciones activas
+        if active_apps:
+            # Renderizar en cuadrícula de 2 columnas
             num_cols = 2
-            for i in range(0, len(filtered_apps), num_cols):
+            for i in range(0, len(active_apps), num_cols):
                 cols = st.columns(num_cols)
                 for j, col in enumerate(cols):
                     idx = i + j
-                    if idx < len(filtered_apps):
+                    if idx < len(active_apps):
                         with col:
-                            render_app_card(filtered_apps[idx], backend_url)
+                            render_app_card(active_apps[idx], backend_url)
 
-    # Footer
+        # Mostrar aplicaciones inactivas en un expander
+        if inactive_apps:
+            st.markdown("<br>", unsafe_allow_html=True)
+            with st.expander(f"📋 Aplicaciones en Desarrollo ({len(inactive_apps)})"):
+                num_cols = 2
+                for i in range(0, len(inactive_apps), num_cols):
+                    cols = st.columns(num_cols)
+                    for j, col in enumerate(cols):
+                        idx = i + j
+                        if idx < len(inactive_apps):
+                            with col:
+                                render_app_card(inactive_apps[idx], backend_url)
+
+    # Footer minimalista
+    st.markdown("<br><br>", unsafe_allow_html=True)
     st.markdown("---")
-    st.caption(
-        "🏢 **Automation Suite** v0.1.0 | "
-        "Desarrollado para automatizaciones corporativas internas"
+    st.markdown(
+        "<div style='text-align: center; color: #a0aec0; font-size: 14px;'>"
+        "Automation Suite v0.1.0 | Desarrollado para automatizaciones corporativas"
+        "</div>",
+        unsafe_allow_html=True
     )
 
 
