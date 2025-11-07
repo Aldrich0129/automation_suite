@@ -3,9 +3,9 @@
 # ========================================
 
 # Variables de configuración
-APP_PORT=8601
+APP_PORT=8602
 BASE_URL_PATH="/app_carta_manifestacion"
-BACKEND_URL=${BACKEND_BASE_URL:-"http://localhost:8000"}
+BACKEND_URL=${BACKEND_BASE_URL:-"http://localhost:8601"}
 
 echo "========================================"
 echo "Generador de Cartas de Manifestación"

@@ -54,14 +54,14 @@ cd apps/app_carta_manifestacion
 ./run_local.sh
 ```
 
-La aplicación estará disponible en: http://localhost:8601/app_carta_manifestacion
+La aplicación estará disponible en: http://localhost:8602/app_carta_manifestacion
 
 ### Método 2: Comando Streamlit directo
 
 ```bash
 cd apps/app_carta_manifestacion
 streamlit run app/ui.py \
-  --server.port=8601 \
+  --server.port=8602 \
   --server.baseUrlPath=/app_carta_manifestacion
 ```
 
@@ -83,7 +83,7 @@ Este script registra la aplicación en el catálogo del backend con:
 
 ### 2. Verificar en el portal
 
-Accede al portal en http://localhost:8501/portal y verifica que la app aparezca en el catálogo.
+Accede al portal en http://localhost:8600/portal y verifica que la app aparezca en el catálogo.
 
 ## Funcionalidades
 
@@ -142,7 +142,7 @@ apps/app_carta_manifestacion/Modelo de plantilla.docx
 ### Error de conexión con el backend
 
 Verifica que:
-1. El backend esté ejecutándose en http://localhost:8000
+1. El backend esté ejecutándose en http://localhost:8601
 2. La variable de entorno `BACKEND_BASE_URL` esté configurada correctamente
 
 ### Eventos de telemetría no aparecen

@@ -41,7 +41,7 @@ def main():
         print()
         print("   💡 Sugerencias:")
         print("      - Verifica que el backend esté ejecutándose")
-        print("      - Ejecuta: cd backend && source venv/bin/activate && uvicorn app.main:app --host 0.0.0.0 --port 8000")
+        print("      - Ejecuta: cd backend && source venv/bin/activate && uvicorn app.main:app --host 0.0.0.0 --port 8601")
         sys.exit(1)
 
     print()
@@ -105,7 +105,7 @@ def main():
     print()
     print("🎉 El sistema está funcionando correctamente")
     print()
-    print("🌐 Accede al portal en: http://localhost:8501/portal")
+    print("🌐 Accede al portal en: http://localhost:8600/portal")
     print()
 
 
