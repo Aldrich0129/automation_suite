@@ -46,7 +46,7 @@ try:
 except ImportError:
     # Fallback si no se puede importar el módulo core
     def get_backend_base_url():
-        return os.getenv("BACKEND_BASE_URL", "http://localhost:8601")
+        return os.getenv("BACKEND_BASE_URL", "http://localhost:8000")
 
     def get_portal_base_path():
         return os.getenv("PORTAL_BASE_PATH", "/portal")
