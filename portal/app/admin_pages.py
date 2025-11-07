@@ -33,9 +33,21 @@ def init_admin_session():
 def show_login_page():
     """Muestra la página de login de administrador."""
     st.markdown("""
-        <div style="text-align: center; padding: 40px 0;">
-            <h1 style="color: #6366f1;">🔐 Panel de Administración</h1>
-            <p style="color: #64748b;">Ingresa tus credenciales para continuar</p>
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        </style>
+        <div style="text-align: center; padding: 48px 0; font-family: 'Inter', sans-serif;">
+            <div style="font-size: 48px; margin-bottom: 16px;">🔐</div>
+            <h1 style="background: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%);
+                       -webkit-background-clip: text;
+                       -webkit-text-fill-color: transparent;
+                       background-clip: text;
+                       font-weight: 800;
+                       font-size: 36px;
+                       margin-bottom: 12px;">
+                Panel de Administración
+            </h1>
+            <p style="color: #64748b; font-size: 16px; font-weight: 500;">Ingresa tus credenciales para continuar</p>
         </div>
     """, unsafe_allow_html=True)
 
@@ -286,8 +298,8 @@ def show_metrics():
             app_names = [app['app_name'] for app in summary['apps']]
             event_counts = [app['total_events'] for app in summary['apps']]
 
-            # Colores del gradiente moderno
-            colors = ['#6366f1', '#8b5cf6', '#d946ef', '#f43f5e', '#fb923c']
+            # Colores de la paleta azul profesional
+            colors = ['#1E88E5', '#1976D2', '#1565C0', '#0D47A1', '#42A5F5']
             colors = colors * (len(app_names) // len(colors) + 1)
 
             ax.barh(app_names, event_counts, color=colors[:len(app_names)])
@@ -338,8 +350,8 @@ def show_metrics():
                 dates = [datetime.fromisoformat(point['date']) for point in time_series['series']]
                 counts = [point['count'] for point in time_series['series']]
 
-                ax.plot(dates, counts, marker='o', linewidth=2, color='#8b5cf6', markersize=4)
-                ax.fill_between(dates, counts, alpha=0.3, color='#8b5cf6')
+                ax.plot(dates, counts, marker='o', linewidth=2, color='#1976D2', markersize=4)
+                ax.fill_between(dates, counts, alpha=0.3, color='#1976D2')
                 ax.set_xlabel('Fecha')
                 ax.set_ylabel('Número de Eventos')
                 ax.set_title(f"{time_series['app_name']} - {event_type} (Últimos {days} días)")
@@ -373,19 +385,57 @@ def show_admin_panel():
         show_login_page()
         return
 
+    # Estilos globales del panel admin
+    st.markdown("""
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        * {
+            font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .admin-header {
+            background: linear-gradient(180deg, #ffffff 0%, #f7fafc 100%);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 24px 0;
+            margin: -20px -40px 32px -40px;
+            padding-left: 40px;
+            padding-right: 40px;
+        }
+
+        .admin-title {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .admin-welcome {
+            color: #64748b;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        [data-testid="stExpander"] {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
     # Header con logout
     col1, col2 = st.columns([4, 1])
 
     with col1:
         st.markdown(f"""
-            <div style="padding: 20px 0;">
-                <h1 style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
-                           -webkit-background-clip: text;
-                           -webkit-text-fill-color: transparent;
-                           background-clip: text;">
-                    ⚙️ Panel de Administración
-                </h1>
-                <p style="color: #64748b;">Bienvenido, <strong>{st.session_state.admin_username}</strong></p>
+            <div class="admin-header">
+                <div class="admin-title">⚙️ Panel de Administración</div>
+                <div class="admin-welcome">Bienvenido, <strong>{st.session_state.admin_username}</strong></div>
             </div>
         """, unsafe_allow_html=True)
 
