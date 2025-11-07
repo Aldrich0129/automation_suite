@@ -1,12 +1,12 @@
 """
-M骴ulo de Configuraci髇 - Core
+M贸dulo de Configuraci贸n - Core
 ================================
 
-Este m骴ulo proporciona funciones para leer y gestionar la configuraci髇
-global de la suite de automatizaci髇.
+Este m贸dulo proporciona funciones para leer y gestionar la configuraci贸n
+global de la suite de automatizaci贸n.
 
 Las variables se leen desde las variables de entorno del sistema,
-con valores por defecto si no est醤 definidas.
+con valores por defecto si no est谩n definidas.
 """
 
 import os
@@ -31,8 +31,8 @@ def get_portal_base_path() -> str:
     """
     Obtiene la ruta base del portal desde las variables de entorno.
 
-    Esta ruta se usa cuando el portal se ejecuta detr醩 de un proxy
-    o en una subruta espec韋ica.
+    Esta ruta se usa cuando el portal se ejecuta detr谩s de un proxy
+    o en una subruta espec铆fica.
 
     Returns:
         str: Ruta base del portal. Por defecto: '/portal'
@@ -47,7 +47,7 @@ def get_portal_base_path() -> str:
 
 def get_env_variable(var_name: str, default_value: str = "") -> str:
     """
-    Funci髇 gen閞ica para leer una variable de entorno.
+    Funci贸n gen茅rica para leer una variable de entorno.
 
     Args:
         var_name (str): Nombre de la variable de entorno

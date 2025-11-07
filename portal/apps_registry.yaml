@@ -2,26 +2,26 @@
 # ============================================
 #
 # Este archivo contiene el inventario de todas las aplicaciones
-# disponibles en la suite de automatización corporativa.
+# disponibles en la suite de automatizaciÃ³n corporativa.
 #
 # Campos:
-#   - id: Identificador único de la aplicación
-#   - name: Nombre descriptivo de la aplicación
-#   - path: Ruta o URL relativa de la aplicación
-#   - tags: Lista de etiquetas para categorización (opcional)
-#   - enabled: Indica si la aplicación está activada (true/false)
+#   - id: Identificador Ãºnico de la aplicaciÃ³n
+#   - name: Nombre descriptivo de la aplicaciÃ³n
+#   - path: Ruta o URL relativa de la aplicaciÃ³n
+#   - tags: Lista de etiquetas para categorizaciÃ³n (opcional)
+#   - enabled: Indica si la aplicaciÃ³n estÃ¡ activada (true/false)
 #
 # Ejemplo de uso:
-#   Para añadir una nueva aplicación, simplemente agrega un nuevo elemento
+#   Para aÃ±adir una nueva aplicaciÃ³n, simplemente agrega un nuevo elemento
 #   a la lista siguiendo el formato existente.
 
 apps:
   - id: "app_01"
-    name: "Gestión de Inventarios"
+    name: "GestiÃ³n de Inventarios"
     path: "/apps/inventory"
     tags:
-      - "logística"
-      - "almacén"
+      - "logÃ­stica"
+      - "almacÃ©n"
       - "inventario"
     enabled: true
 
@@ -31,16 +31,16 @@ apps:
     tags:
       - "finanzas"
       - "contabilidad"
-      - "automatización"
+      - "automatizaciÃ³n"
     enabled: true
 
   - id: "app_03"
-    name: "Dashboard de Métricas"
+    name: "Dashboard de MÃ©tricas"
     path: "/apps/metrics"
     tags:
-      - "análisis"
+      - "anÃ¡lisis"
       - "reporting"
-      - "métricas"
+      - "mÃ©tricas"
     enabled: false
 
   - id: "app_04"
@@ -49,7 +49,7 @@ apps:
     tags:
       - "reporting"
       - "documentos"
-      - "automatización"
+      - "automatizaciÃ³n"
     enabled: true
 
   - id: "app_05"
@@ -57,6 +57,6 @@ apps:
     path: "/apps/validator"
     tags:
       - "calidad"
-      - "validación"
+      - "validaciÃ³n"
       - "datos"
     enabled: false
