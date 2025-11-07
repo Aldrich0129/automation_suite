@@ -73,6 +73,17 @@ automation-suite/
 │   ├── requirements.txt
 │   └── run_local.sh
 │
+├── apps/                       # Aplicaciones modulares
+│   └── app_carta_manifestacion/  # Generador de Cartas
+│       ├── app/
+│       │   ├── domain/        # Lógica de negocio
+│       │   ├── services.py    # Orquestación
+│       │   └── ui.py          # Interfaz Streamlit
+│       ├── requirements.txt
+│       ├── run_local.sh
+│       ├── register_app.py    # Script de registro
+│       └── README.md
+│
 ├── core/                       # Módulo común
 │   └── core/
 │       └── settings.py
@@ -261,6 +272,72 @@ Tipos de evento soportados:
 - `generate_document`: Generación de documento
 - `error`: Error en la app
 - `custom`: Evento personalizado
+
+## 📱 Aplicaciones Disponibles
+
+### Generador de Cartas de Manifestación
+
+Aplicación modular para generar cartas de manifestación de auditoría.
+
+**Características:**
+- Importación de datos desde Excel/Word
+- Procesamiento de plantillas Word
+- Generación automatizada de documentos
+- Telemetría integrada
+- Interfaz amigable con validaciones
+
+**Ejecución:**
+
+```bash
+# Instalar dependencias
+cd apps/app_carta_manifestacion
+pip install -r requirements.txt
+
+# Ejecutar localmente
+./run_local.sh
+
+# Registrar en el portal
+python register_app.py
+```
+
+La aplicación estará disponible en:
+- **Standalone:** http://localhost:8601/app_carta_manifestacion
+- **Portal:** http://localhost:8501/portal (en el catálogo)
+
+**Documentación completa:** [apps/app_carta_manifestacion/README.md](apps/app_carta_manifestacion/README.md)
+
+### Crear una nueva aplicación
+
+Para crear una nueva aplicación siguiendo la arquitectura estándar:
+
+```bash
+# Crear estructura
+mkdir -p apps/mi_app/app/domain
+cd apps/mi_app
+
+# Crear archivos base
+# - app/domain/*.py (lógica de negocio)
+# - app/services.py (orquestación)
+# - app/ui.py (interfaz Streamlit)
+# - requirements.txt
+# - run_local.sh
+# - register_app.py
+
+# Registrar en el backend
+python register_app.py
+```
+
+**Arquitectura recomendada:**
+```
+apps/mi_app/
+├── app/
+│   ├── domain/           # Lógica pura
+│   ├── services.py       # Orquestación
+│   └── ui.py             # Interfaz
+├── requirements.txt
+├── run_local.sh
+└── README.md
+```
 
 ## 🧪 Tests
 
