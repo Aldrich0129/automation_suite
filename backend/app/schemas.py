@@ -8,7 +8,7 @@ Define los esquemas de validación y serialización de datos.
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 
 # ===========================
@@ -49,8 +49,7 @@ class AppOut(AppBase):
     updated_at: datetime
     has_password: bool = False
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AppPassword(BaseModel):
@@ -85,8 +84,7 @@ class AppScheduleOut(AppScheduleBase):
     id: int
     app_id: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ===========================
@@ -163,8 +161,7 @@ class AdminUserOut(BaseModel):
     created_at: datetime
     last_login: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class LoginResponse(BaseModel):

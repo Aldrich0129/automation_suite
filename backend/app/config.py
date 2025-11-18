@@ -27,7 +27,7 @@ class Settings:
 
     # Seguridad
     SECRET_KEY: str = os.getenv("SECRET_KEY", "change_me_in_production")
-    TELEMETRY_TOKEN: Optional[str] = os.getenv("TELEMETRY_TOKEN")
+    TELEMETRY_TOKEN: Optional[str] = os.getenv("TELEMETRY_TOKEN") or None
 
     # Admin por defecto
     ADMIN_DEFAULT_USER: str = os.getenv("ADMIN_DEFAULT_USER", "admin")
